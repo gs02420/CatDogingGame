@@ -1,0 +1,154 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>My First Game</title>
+   <style>body{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+height:100vh;
+margin:0;
+background-color: #333;
+color: white;
+font-family:sans-serif;
+}
+
+
+canvas{
+   background-color: #eee;
+   border: 2px solid black;
+}
+</style>
+</head>
+<body>
+   <h1>Journey To Mental Stability!</h1>
+   <canvas id="gameCanvas" width="600" height="400"></canvas>
+   <p id="score">Stability level = 0</p>
+   <p id = "ExtraInfo">Height = 0</p>
+   <p id = "ExtraInfo(1)">width = 0</p>
+
+
+   <script>
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+const scoreElement = document.getElementById('score');
+const Info = document.getElementById('ExtraInfo');
+const Infoone = document.getElementById('ExtraInfo(1)');
+let obsready = false;
+const obsImage = new Image();
+obsImage.src = 'obsticalcat(1).png'
+obsImage.onload = function() {
+   obsready = true;
+}
+let extraEnemyAdded = false;
+function getRandomY(height) {
+return Math.floor(Math.random() * (canvas.height - height));
+}
+let myObsticals = [
+   new Obstical(40, 50, 0, getRandomY(50), 2),
+   new Obstical(40, 50, 0, getRandomY(50), 2),
+        ];
+const playerSize = 50;
+let score = 0;
+let playerX = (canvas.width/2) - (playerSize/2);
+let playerY = (canvas.height/2) - (playerSize/2);
+let frameCount = 0;
+
+
+function Obstical(width, height, x, y, speed){
+   this.width = width;
+   this.height = height;
+   this.x = x;
+   this.y = y;
+   this.speed = speed;
+   
+}
+
+Obstical.prototype.draw = function(){
+   ctx.drawImage(obsImage, this.x, this.y , this.width, this.height);
+}
+
+function gameLoop(){ 
+   updateGame();
+   drawGame();
+
+   requestAnimationFrame(gameLoop);
+}
+
+
+function updateGame(){
+
+    if (playerX < 0) {
+        playerX = 0;
+    } else if (playerX + playerSize > canvas.width) {
+        playerX = canvas.width - playerSize;
+    }
+
+    if (playerY < 0) {
+        playerY = 0;
+    } else if (playerY + playerSize > canvas.height) {
+        playerY = canvas.height - playerSize;
+    }
+   scoreElement.textContent = `stability level = ${score}`;
+   if (score > 10 && !extraEnemyAdded) {
+ myObsticals.push(new Obstical(40, 50, 0, getRandomY(50), 3)); 
+ myObsticals.forEach(obs => {
+obs.speed = 3;
+   });
+ extraEnemyAdded = true;
+}
+   Info.textContent = `Height = ${canvas.height - (playerY + playerSize)}`;
+   Infoone.textContent = `Width = ${canvas.width - (playerX + playerSize)}`;
+   myObsticals.forEach(obs => {
+      obs.x += obs.speed;
+      if (obs.x > canvas.width) {
+         obs.x = -obs.width;
+         obs.y = getRandomY(obs.height);
+         score++;
+      }
+              if (checkCollision(playerX, playerY, playerSize, obs)) {
+            window.location.href = "GameOver.html?score=" + score;
+        }
+
+   })
+
+}
+
+function checkCollision(playerX, playerY, playerSize, obs) {
+   return playerX < obs.x + obs.width &&
+          playerX + playerSize > obs.x &&
+          playerY < obs.y + obs.height &&
+          playerY + playerSize > obs.y;
+}
+function drawGame(){
+   ctx.clearRect(0, 0,canvas.width, canvas.height);
+
+
+   ctx.fillStyle = 'pink';
+   ctx.fillRect(playerX, playerY, playerSize, playerSize);
+   if (obsready) {
+      myObsticals.forEach(obs => obs.draw());
+   }
+}
+document.addEventListener('keydown', (event) =>{
+  if (event.key === 'ArrowRight') {
+    playerX += 10;
+  } else if (event.key === 'ArrowLeft') {
+    playerX -= 10;
+  } 
+  if (event.key === "ArrowUp") {
+    playerY -= 10;
+  } else if (event.key === 'ArrowDown') {
+    playerY +=10;
+  }
+});
+gameLoop();
+</script>
+</body>
+</html>
