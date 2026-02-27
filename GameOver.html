@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameOver</title>
+</head>
+<body>
+  <p style="font-size: 6em;">Game Over! Your stability level was: <p style="font-size: 6em; text-decoration: underline;"  id="scoreDisplay"></p></p>
+  <p style = "display: inline-block;">Back to <a href="StartPage.html">Start</a></p>  
+  <p style = "display: inline-block;">Back to <a href="https://davidsoncomputers.org/">MainPage</a></p>  
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const score = params.get('score');
+    document.getElementById('scoreDisplay').innerText = score;
+  </script>
+</body>
+</html>
